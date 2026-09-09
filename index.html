@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>KL Tang</title>
+<meta name="description" content="KL Tang builds tools for East Asian historical research — CJK calendar conversion, OCR pipelines for classical texts, and MCP servers over library catalogues and biographical databases.">
+<meta name="author" content="KL Tang">
+<meta name="theme-color" content="#06090D">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" fill="%2306090D"/><rect x="13" y="4" width="6" height="24" rx="3" fill="%23FF2E88"/></svg>'>
+<link rel="canonical" href="https://kltng.github.io/eastd143a_2026/">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="KL Tang">
+<meta property="og:description" content="KL Tang builds tools for East Asian historical research — CJK calendar conversion, OCR pipelines for classical texts, and MCP servers over library catalogues and biographical databases.">
+<meta property="og:url" content="https://kltng.github.io/eastd143a_2026/">
+<meta property="og:locale" content="en_GB">
+<meta property="og:locale:alternate" content="zh_HK">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Big+Shoulders+Display:wght@600;800;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+TC:wght@700;900&display=swap">
+
+<style>
+/* ==========================================================================
+   KOWLOON NEON — a personal landing page, Hong Kong 1984
+   Single-theme by intent: a neon night has no light mode.
+   Every placeholder is marked with a TODO comment in the HTML below.
+   ========================================================================== */
+
+:root{
+  /* --- ground: blue-black with a teal bias, not neutral grey --- */
+  --ink:        #06090D;
+  --facade:     #0B1117;
+  --facade-hi:  #121C24;
+  --hairline:   #1D2A34;
+
+  /* --- text --- */
+  --tube:       #FFF4EA;   /* hot glass core, warm white */
+  --concrete:   #8B97A4;   /* cool grey, blue-leaning */
+  --concrete-dim:#5B6774;
+
+  /* --- tube gases, as rgb triples so they can carry alpha --- */
+  --magenta:    255 46 136;
+  --jade:        38 231 168;
+  --amber:      255 179  61;
+  --tube-rgb:   255 244 234;
+  --lacquer:    232  32  58;
+
+  /* --- type scale --- */
+  --s--1: .78rem;
+  --s-0:  1rem;
+  --s-1:  1.3rem;
+  --s-2:  1.85rem;
+  --s-3:  2.6rem;
+  --s-name: clamp(3.6rem, 12vw, 8.5rem);
+
+  --f-display: 'Big Shoulders Display', 'Arial Narrow', 'Helvetica Neue', sans-serif;
+  --f-zh: 'Noto Serif TC', 'Songti TC', 'PingFang TC', serif;
+  --f-body: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  --f-mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+}
+
+*,*::before,*::after{ box-sizing:border-box; }
+
+body{
+  margin:0;
+  background:
+    radial-gradient(120% 70% at 78% -8%, rgb(var(--magenta) / .10), transparent 62%),
+    radial-gradient(90% 60% at 8% 4%, rgb(var(--jade) / .05), transparent 60%),
+    var(--ink);
+  color:var(--concrete);
+  font-family:var(--f-body);
+  font-size:var(--s-0);
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+
+a{ color:inherit; }
+:focus-visible{
+  outline:2px solid rgb(var(--amber) / .9);
+  outline-offset:3px;
+  border-radius:1px;
+}
+
+/* --- the neon rendering primitives ------------------------------------- */
+.tubetext{
+  color:var(--tube);
+  text-shadow:
+    0 0 1px rgb(var(--tube-rgb) / .95),
+    0 0 6px rgb(var(--c) / .95),
+    0 0 16px rgb(var(--c) / .75),
+    0 0 38px rgb(var(--c) / .45),
+    0 0 74px rgb(var(--c) / .22);
+}
+.tubebox{
+  border:1px solid rgb(var(--c) / .55);
+  box-shadow:
+    0 0 0 1px rgb(var(--c) / .12),
+    0 0 14px rgb(var(--c) / .22),
+    0 0 44px rgb(var(--c) / .10),
+    inset 0 0 22px rgb(var(--c) / .07);
+}
+
+.c-magenta{ --c: var(--magenta); }
+.c-jade{    --c: var(--jade); }
+.c-amber{   --c: var(--amber); }
+
+/* --- power-on sequence: flickers up, never fully dark ------------------ */
+@keyframes powerOn{
+  0%{opacity:.28}  9%{opacity:.88} 14%{opacity:.2}
+  22%{opacity:1}  29%{opacity:.42} 38%,100%{opacity:1}
+}
+.powerOn{ animation:powerOn 1.3s steps(1,end) both; }
+.d1{ animation-delay:.05s } .d2{ animation-delay:.22s }
+.d3{ animation-delay:.4s }  .d4{ animation-delay:.58s }
+
+/* one tube in every street is on its way out */
+@keyframes stutter{
+  0%,90%,100%{opacity:1} 91%{opacity:.22} 92.5%{opacity:.96}
+  94%{opacity:.12} 95.5%{opacity:1} 96.5%{opacity:.4} 97.5%{opacity:1}
+}
+
+/* ======================= hoarding strip =============================== */
+.hoarding{
+  display:flex; align-items:center; gap:14px;
+  padding:6px clamp(20px,5vw,56px);
+  background:repeating-linear-gradient(135deg,
+    rgb(var(--amber) / .16) 0 12px, transparent 12px 24px), #0A0E13;
+  border-bottom:1px solid rgb(var(--amber) / .28);
+  font-family:var(--f-mono); font-size:.68rem;
+  letter-spacing:.09em; text-transform:uppercase;
+  color:rgb(var(--amber) / .92);
+}
+.hoarding .zh{ font-family:var(--f-zh); letter-spacing:.2em; text-transform:none; }
+.hoarding p{ margin:0; flex:1; min-width:0; }
+.hoarding button{
+  flex:none; background:none; border:1px solid rgb(var(--amber) / .4);
+  color:inherit; font:inherit; padding:1px 8px 2px; cursor:pointer;
+  line-height:1.4;
+}
+.hoarding button:hover{ background:rgb(var(--amber) / .14); }
+
+/* ======================= shell ======================================== */
+.street{ max-width:1080px; margin-inline:auto; padding-inline:clamp(20px,5vw,56px); }
+
+.topbar{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:20px; padding:22px 0 0;
+}
+.monogram{
+  --c:var(--magenta);
+  display:grid; place-items:center; width:38px; height:38px;
+  font-family:var(--f-zh); font-weight:900; font-size:1.15rem;
+  padding-bottom:2px;
+}
+.topnav{
+  display:flex; gap:clamp(14px,3vw,30px);
+  font-family:var(--f-mono); font-size:var(--s--1);
+  letter-spacing:.1em; text-transform:uppercase;
+}
+.topnav a{ text-decoration:none; color:var(--concrete); padding-bottom:3px; border-bottom:1px solid transparent; }
+.topnav a:hover{ color:var(--tube); border-bottom-color:rgb(var(--jade) / .8); }
+.topnav .zh{ font-family:var(--f-zh); letter-spacing:.16em; margin-right:.45em; color:var(--concrete-dim); }
+.topnav a:hover .zh{ color:rgb(var(--jade) / .95); }
+
+/* ======================= hero ========================================= */
+.hero{ position:relative; overflow:hidden; padding:clamp(46px,8vw,86px) 0 clamp(30px,5vw,54px); }
+.hero-inner{
+  position:relative; z-index:2;
+  display:grid; gap:clamp(26px,5vw,54px);
+  grid-template-columns:minmax(0,1fr);
+}
+@media (min-width:860px){
+  .hero-inner{ grid-template-columns:minmax(0,1fr) auto; align-items:start; }
+}
+
+/* mullion grid, very faint, behind the sign */
+.mullions{
+  position:absolute; inset:-10% -6% 22% 42%; z-index:0; pointer-events:none;
+  background:
+    repeating-linear-gradient(90deg, rgb(var(--tube-rgb) / .05) 0 1px, transparent 1px 62px),
+    repeating-linear-gradient(0deg,  rgb(var(--tube-rgb) / .05) 0 1px, transparent 1px 78px);
+  mask-image:radial-gradient(70% 60% at 60% 30%, #000, transparent 78%);
+}
+
+/* rain: vertical gradient rotated, period-matched so it loops seamlessly */
+.rain{
+  position:absolute; left:-25%; top:-40%; width:150%; height:190%;
+  z-index:1; pointer-events:none; opacity:.055;
+  transform:rotate(9deg);
+  background:repeating-linear-gradient(180deg,
+    transparent 0 20px, rgb(var(--tube-rgb) / .85) 20px 21px, transparent 21px 38px);
+  animation:rainfall .62s linear infinite;
+  mask-image:linear-gradient(#000 20%, transparent 78%);
+}
+@keyframes rainfall{ to{ background-position:0 38px; } }
+
+.eyebrow{
+  margin:0 0 clamp(14px,2vw,22px);
+  font-family:var(--f-mono); font-size:var(--s--1);
+  letter-spacing:.22em; text-transform:uppercase;
+  color:rgb(var(--amber) / .8);
+}
+.eyebrow .zh{ font-family:var(--f-zh); letter-spacing:.28em; }
+
+.bigtype{
+  font-family:var(--f-display); font-weight:900;
+  font-size:var(--s-name); line-height:.84;
+  letter-spacing:-.005em; text-transform:uppercase;
+  margin:0;
+}
+.name{ --c:var(--magenta); text-wrap:balance; }
+
+/* wet asphalt: only the first inch of the reflection sits in the puddle */
+.puddle{
+  height:.3em; overflow:hidden; margin-top:.05em;
+  font-family:var(--f-display); font-weight:900;
+  font-size:var(--s-name); line-height:.84;
+  user-select:none; pointer-events:none;
+}
+.reflection{
+  --c:var(--magenta);
+  margin:0; transform:scaleY(-1);
+  filter:blur(3px); opacity:.24;
+  mask-image:linear-gradient(#000, transparent 74%);
+}
+
+.role{
+  --c:var(--jade);
+  margin:clamp(16px,2.4vw,26px) 0 0;
+  font-family:var(--f-display); font-weight:600;
+  font-size:clamp(1.15rem,2.5vw,1.7rem);
+  letter-spacing:.06em; text-transform:uppercase;
+}
+.role .zh{
+  font-family:var(--f-zh); font-weight:700; letter-spacing:.14em;
+  text-transform:none; margin-right:.6em;
+}
+
+.lede{
+  max-width:44ch; margin:18px 0 0;
+  font-size:1.03rem; color:var(--concrete);
+}
+.lede strong{ color:var(--tube); font-weight:600; }
+
+.cta-row{ display:flex; flex-wrap:wrap; gap:12px; margin-top:clamp(24px,3.4vw,34px); }
+.tube-btn{
+  display:inline-flex; align-items:baseline; gap:.6em;
+  padding:11px 20px 12px; text-decoration:none;
+  background:rgb(var(--c) / .05);
+  font-family:var(--f-mono); font-size:var(--s--1);
+  letter-spacing:.14em; text-transform:uppercase; color:var(--tube);
+  transition:background .18s ease, box-shadow .18s ease;
+}
+.tube-btn .zh{ font-family:var(--f-zh); letter-spacing:.18em; text-transform:none; font-size:.95rem; }
+.tube-btn:hover{
+  background:rgb(var(--c) / .13);
+  box-shadow:0 0 0 1px rgb(var(--c) / .3), 0 0 20px rgb(var(--c) / .38), inset 0 0 26px rgb(var(--c) / .12);
+}
+
+/* --- the vertical sign on its bracket arm --- */
+.signpost{ position:relative; display:flex; justify-content:flex-start; padding-left:34px; }
+@media (min-width:860px){ .signpost{ padding-left:56px; } }
+.bracket{
+  position:absolute; left:0; top:26px; width:100%; height:1px;
+  background:linear-gradient(90deg, var(--hairline), rgb(var(--amber) / .35));
+}
+.bracket::before{
+  content:""; position:absolute; left:0; top:-5px;
+  width:11px; height:11px; border:1px solid var(--hairline);
+  background:var(--facade);
+}
+.vsign{
+  --c:var(--amber);
+  display:flex; flex-direction:column; align-items:center;
+  gap:.16em; padding:16px 15px 14px;
+  background:linear-gradient(180deg, rgb(var(--amber) / .07), transparent 70%), #080C11;
+  font-family:var(--f-zh); font-weight:900;
+  font-size:clamp(2.1rem,5.4vw,3.1rem); line-height:1;
+}
+.vsign .flick{ animation:stutter 7.4s steps(1,end) infinite; }
+.vsign-foot{
+  margin-top:10px; padding:5px 0 6px; text-align:center;
+  border-top:1px solid rgb(var(--amber) / .3);
+  font-family:var(--f-mono); font-size:.6rem;
+  letter-spacing:.2em; color:rgb(var(--amber) / .62);
+}
+
+/* ======================= sections ===================================== */
+main{ display:grid; gap:clamp(64px,10vw,120px); padding:clamp(40px,7vw,84px) 0; }
+
+.sec-h{
+  display:grid; grid-template-columns:auto auto 1fr;
+  align-items:center; gap:16px; margin:0 0 clamp(26px,4vw,40px);
+}
+.sec-zh{
+  --c:var(--magenta);
+  font-family:var(--f-zh); font-weight:900;
+  font-size:clamp(1.6rem,3.6vw,2.3rem); line-height:1; letter-spacing:.1em;
+}
+.sec-en{
+  font-family:var(--f-mono); font-size:var(--s--1);
+  letter-spacing:.24em; text-transform:uppercase; color:var(--concrete-dim);
+  padding-top:.3em;
+}
+.sec-rule{ height:1px; background:linear-gradient(90deg, var(--hairline), transparent); }
+
+/* --- about --- */
+.about-grid{ display:grid; gap:clamp(28px,4vw,48px); grid-template-columns:minmax(0,1fr); }
+@media (min-width:800px){ .about-grid{ grid-template-columns:minmax(0,1.35fr) minmax(0,1fr); } }
+.prose p{ margin:0 0 1.05em; max-width:62ch; }
+.prose p:last-child{ margin-bottom:0; }
+.prose em{ color:var(--tube); font-style:normal; border-bottom:1px solid rgb(var(--jade) / .45); }
+
+/* enamel spec plate, riveted at the corners */
+.plate{
+  position:relative; align-self:start;
+  background:linear-gradient(180deg, var(--facade-hi), var(--facade));
+  border:1px solid var(--hairline);
+  padding:22px 24px 24px;
+}
+.plate::before,.plate::after{
+  content:""; position:absolute; width:100%; height:5px; left:0;
+  background:
+    radial-gradient(circle at 10px 50%, var(--concrete-dim) 0 2px, transparent 2.5px),
+    radial-gradient(circle at calc(100% - 10px) 50%, var(--concrete-dim) 0 2px, transparent 2.5px);
+}
+.plate::before{ top:8px } .plate::after{ bottom:8px }
+.plate dl{
+  margin:0; display:grid; grid-template-columns:auto minmax(0,1fr);
+  gap:11px 18px; font-family:var(--f-mono); font-size:.8rem;
+}
+.plate dt{
+  color:var(--concrete-dim); letter-spacing:.1em;
+  text-transform:uppercase; white-space:nowrap;
+}
+.plate dt .zh{ font-family:var(--f-zh); letter-spacing:.14em; text-transform:none; margin-right:.5em; color:var(--concrete); }
+.plate dd{ margin:0; color:var(--tube); font-variant-numeric:tabular-nums; }
+.plate dd .on{ color:rgb(var(--jade) / .95); }
+
+/* --- work: hanging light-boxes --- */
+.boxes{ display:grid; gap:clamp(18px,2.6vw,26px); grid-template-columns:minmax(0,1fr); }
+@media (min-width:760px){ .boxes{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+
+.box{
+  position:relative; display:flex; flex-direction:column;
+  gap:12px; padding:26px 26px 24px;
+  background:linear-gradient(180deg, rgb(var(--c) / .045), transparent 60%), #080D12;
+  text-decoration:none;
+  transition:box-shadow .22s ease, transform .22s ease, background .22s ease;
+}
+.box::before{ /* the hanging rod */
+  content:""; position:absolute; left:26px; right:26px; top:-9px; height:1px;
+  background:rgb(var(--c) / .3);
+}
+.box:hover{
+  transform:translateY(-2px);
+  background:linear-gradient(180deg, rgb(var(--c) / .1), transparent 65%), #080D12;
+  box-shadow:
+    0 0 0 1px rgb(var(--c) / .5),
+    0 0 26px rgb(var(--c) / .34),
+    0 0 70px rgb(var(--c) / .16),
+    inset 0 0 34px rgb(var(--c) / .1);
+}
+.box-zh{
+  margin:0; font-family:var(--f-zh); font-weight:900;
+  font-size:1.55rem; line-height:1; letter-spacing:.12em;
+}
+.box h3{
+  margin:0; font-family:var(--f-display); font-weight:800;
+  font-size:clamp(1.35rem,2.6vw,1.75rem); line-height:1.05;
+  letter-spacing:.02em; text-transform:uppercase; color:var(--tube);
+}
+.box p{ margin:0; font-size:.94rem; max-width:38ch; }
+.box-spec{
+  list-style:none; display:flex; flex-wrap:wrap; gap:6px;
+  margin:2px 0 0; padding:0;
+  font-family:var(--f-mono); font-size:.66rem;
+  letter-spacing:.13em; text-transform:uppercase;
+}
+.box-spec li{ padding:3px 8px 4px; border:1px solid var(--hairline); color:var(--concrete-dim); }
+.box-go{
+  margin-top:auto; padding-top:14px;
+  font-family:var(--f-mono); font-size:.68rem;
+  letter-spacing:.18em; text-transform:uppercase; color:rgb(var(--c) / .85);
+}
+.box-go .zh{ font-family:var(--f-zh); letter-spacing:.16em; text-transform:none; margin-right:.5em; }
+
+/* --- contact: the shopfront --- */
+.shopfront{ display:grid; gap:clamp(26px,4vw,40px); grid-template-columns:minmax(0,1fr); align-items:start; }
+@media (min-width:800px){ .shopfront{ grid-template-columns:auto minmax(0,1fr); } }
+
+.opensign{
+  --c:var(--jade);
+  justify-self:start; text-align:center; padding:20px 26px 18px;
+  background:radial-gradient(80% 70% at 50% 20%, rgb(var(--jade) / .11), transparent 70%), #070C10;
+  animation:breathe 4.2s ease-in-out infinite;
+}
+@keyframes breathe{ 0%,100%{ filter:brightness(1) } 50%{ filter:brightness(1.16) } }
+.opensign .zh{
+  display:block; font-family:var(--f-zh); font-weight:900;
+  font-size:clamp(1.8rem,4vw,2.4rem); line-height:1; letter-spacing:.1em;
+}
+.opensign .en{
+  display:block; margin-top:9px;
+  font-family:var(--f-mono); font-size:.64rem;
+  letter-spacing:.3em; color:rgb(var(--jade) / .8);
+}
+
+.links{ list-style:none; margin:0; padding:0; display:grid; gap:0; }
+.links li + li{ border-top:1px solid var(--hairline); }
+.links a{
+  display:grid; grid-template-columns:2.4em minmax(0,7.5em) minmax(0,1fr);
+  align-items:baseline; gap:14px; padding:14px 4px;
+  text-decoration:none; transition:color .16s ease, background .16s ease;
+}
+.links .zh{ font-family:var(--f-zh); font-weight:700; color:var(--concrete-dim); letter-spacing:.1em; }
+.links .label{
+  font-family:var(--f-display); font-weight:800; font-size:1.15rem;
+  letter-spacing:.06em; text-transform:uppercase; color:var(--tube);
+}
+.links .handle{ font-family:var(--f-mono); font-size:.78rem; color:var(--concrete-dim); }
+.links a:hover{ background:rgb(var(--tube-rgb) / .03); }
+.links a:hover .zh{ color:rgb(var(--magenta) / .95); }
+.links a:hover .handle{ color:var(--concrete); }
+
+.hours{
+  margin:22px 0 0; font-family:var(--f-mono); font-size:.76rem;
+  letter-spacing:.06em; color:var(--concrete-dim);
+}
+.hours time{ color:rgb(var(--amber) / .95); font-variant-numeric:tabular-nums; }
+
+/* ======================= footer ======================================= */
+footer{
+  display:flex; flex-wrap:wrap; align-items:flex-end;
+  justify-content:space-between; gap:28px;
+  padding:clamp(34px,5vw,54px) 0 clamp(46px,6vw,66px);
+  border-top:1px solid var(--hairline);
+}
+
+/* a bilingual enamel nameplate, seen at night and lit by the signs above it.
+   Dulled and colour-cast on purpose: the neon is the brightest thing here. */
+.streetplate{
+  position:relative; isolation:isolate;
+  padding:16px 32px 17px; text-align:center; line-height:1.1;
+  color:#161C22;
+  background:linear-gradient(180deg, #C2BFB4, #A9A69B 58%, #97948A);
+  transform:rotate(-.7deg);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / .26),
+    inset 0 -2px 4px rgb(0 0 0 / .28),
+    0 16px 42px rgb(0 0 0 / .55);
+}
+/* the rule sits inset from the edge, the way the plates carry it */
+.streetplate::before{
+  content:""; position:absolute; inset:5px; z-index:1;
+  border:1.5px solid #1C2229;
+}
+/* colour thrown across the enamel by the tubes overhead */
+.streetplate::after{
+  content:""; position:absolute; inset:0; z-index:2; pointer-events:none;
+  background:linear-gradient(114deg,
+    rgb(var(--magenta) / .30) 0 20%,
+    rgb(255 255 255 / .16) 33%,
+    transparent 50% 72%,
+    rgb(var(--jade) / .22) 100%);
+  mix-blend-mode:soft-light;
+}
+.streetplate span{ position:relative; z-index:3; }
+.streetplate .en{
+  display:block; font-family:var(--f-display); font-weight:800;
+  font-size:1.24rem; letter-spacing:.06em; text-transform:uppercase;
+}
+.streetplate .zh{
+  display:block; margin-top:3px;
+  font-family:var(--f-zh); font-weight:700; font-size:1.12rem; letter-spacing:.16em;
+}
+
+.stamp{
+  font-family:var(--f-mono); font-size:.66rem;
+  line-height:2; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--concrete-dim); text-align:right; margin-left:auto;
+}
+.stamp .zh{ font-family:var(--f-zh); letter-spacing:.2em; text-transform:none; color:var(--concrete); }
+.stamp span{ display:block; }
+
+@media (prefers-reduced-motion:reduce){
+  .rain{ display:none; }
+  .powerOn,.vsign .flick,.opensign{ animation:none; opacity:1; }
+  .box:hover{ transform:none; }
+}
+</style>
+
+
+<!-- ====== three lines still need you: role, email, location. Marked TODO below. ====== -->
+<div class="hoarding" id="hoarding">
+  <span class="zh">待補</span>
+  <p>Three lines still need you &mdash; role, email, location. Search <b>TODO</b> in index.html</p>
+  <button type="button" id="hoarding-x" aria-label="Dismiss notice">Dismiss &times;</button>
+</div>
+
+<div class="street">
+
+  <div class="topbar">
+    <span class="monogram tubebox tubetext c-magenta" aria-hidden="true">文</span>
+    <nav class="topnav" aria-label="Sections">
+      <a href="#about"><span class="zh">關於</span>About</a>
+      <a href="#work"><span class="zh">作品</span>Work</a>
+      <a href="#contact"><span class="zh">聯絡</span>Contact</a>
+    </nav>
+  </div>
+
+  <!-- =========================== hero =========================== -->
+  <header class="hero">
+    <div class="mullions" aria-hidden="true"></div>
+    <div class="rain" aria-hidden="true"></div>
+
+    <div class="hero-inner">
+      <div>
+        <p class="eyebrow powerOn d1"><span class="zh">香港</span> Hong Kong &middot; <span class="zh">數碼人文</span> Digital humanities</p>
+
+        <h1 class="bigtype name tubetext powerOn d2">KL<br>Tang</h1>
+        <div class="puddle" aria-hidden="true"><p class="bigtype reflection tubetext">KL<br>Tang</p></div>
+
+        <!-- TODO: your actual title. I can see the work, not the job.
+             Candidates from your orgs (fccs-dci, artshumrc, EASTD143):
+             "Digital scholarship, Fairbank Center" / "Research associate" / "Lecturer". -->
+        <p class="role tubetext powerOn d3"><span class="zh">數碼人文</span> Digital humanities</p>
+
+        <p class="lede powerOn d4">
+          I build tools that make East Asian historical sources tractable &mdash;
+          calendar conversion across four writing traditions, OCR pipelines for
+          <strong>古籍</strong>, and MCP servers sitting over library catalogues and
+          biographical databases. Mostly Python, mostly for other researchers.
+        </p>
+
+        <div class="cta-row powerOn d4">
+          <!-- TODO: the address you want on a public page -->
+          <a class="tube-btn tubebox c-jade" href="mailto:you@example.edu"><span class="zh">來信</span>Email me</a>
+          <a class="tube-btn tubebox c-amber" href="https://github.com/kltng" rel="me noopener"><span class="zh">代碼</span>GitHub</a>
+        </div>
+      </div>
+
+      <div class="signpost">
+        <span class="bracket" aria-hidden="true"></span>
+        <div>
+          <div class="vsign tubebox powerOn d2" aria-hidden="true">
+            <span class="tubetext">數</span>
+            <span class="tubetext">碼</span>
+            <span class="tubetext flick">人</span>
+            <span class="tubetext">文</span>
+          </div>
+          <p class="vsign-foot powerOn d3">Digital humanities</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- =========================== about =========================== -->
+    <section id="about">
+      <h2 class="sec-h">
+        <span class="sec-zh tubetext c-magenta">關於</span>
+        <span class="sec-en">About</span>
+        <span class="sec-rule" aria-hidden="true"></span>
+      </h2>
+
+      <div class="about-grid">
+        <!-- TODO: rewrite in your own voice. Everything below is drawn from your
+             public repos only, so it is accurate but it is not yet *yours*. -->
+        <div class="prose">
+          <p>
+            I work on the unglamorous infrastructure of Chinese historical research:
+            getting sources out of images, into databases, and into a form a
+            researcher &mdash; or an agent &mdash; can actually query.
+          </p>
+          <p>
+            That means <em>calendars</em>, because a Ming date is not a Gregorian date
+            and the intercalary months disagree between sources. It means <em>OCR</em>,
+            because 古籍 defeat pipelines built for modern print. And it means
+            <em>catalogues</em>, because a subject heading is only useful if you can
+            find the right one.
+          </p>
+          <p>
+            Most of it ends up as small, boring, well-documented tools that other
+            people can install. A few of them are on PyPI. I teach some of this too.
+          </p>
+        </div>
+
+        <div class="plate">
+          <dl>
+            <!-- TODO: where you actually are -->
+            <dt><span class="zh">所在</span>Based</dt>
+            <dd>&mdash;&mdash;</dd>
+
+            <dt><span class="zh">行業</span>Field</dt>
+            <dd>Digital humanities &middot; Chinese studies</dd>
+
+            <dt><span class="zh">工具</span>Tools</dt>
+            <dd>Python &middot; TypeScript &middot; SQLite &middot; MCP &middot; Quarto</dd>
+
+            <dt><span class="zh">語言</span>Speaks</dt>
+            <dd>廣東話 &middot; 普通話 &middot; English</dd>
+
+            <dt><span class="zh">現況</span>Teaching</dt>
+            <dd><span class="on">EASTD 143B, Spring 2026</span></dd>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================== work =========================== -->
+    <section id="work">
+      <h2 class="sec-h">
+        <span class="sec-zh tubetext c-magenta">作品</span>
+        <span class="sec-en">Selected work</span>
+        <span class="sec-rule" aria-hidden="true"></span>
+      </h2>
+
+      <!-- All four are your own public repos. Forks (openwiki, cite-non-english,
+           pitstop) are deliberately left off, and no private repo is named. -->
+      <div class="boxes">
+
+        <a class="box c-magenta" href="https://github.com/kltng/humanities-skills" rel="noopener">
+          <p class="box-zh tubetext" aria-hidden="true">人文</p>
+          <h3>Humanities Skills</h3>
+          <p>A skill marketplace for academic research — CBDB and JBDB biographical
+             lookups over 656,000 historical figures, gazetteers, library catalogues.</p>
+          <ul class="box-spec"><li>Python</li><li>Claude Code</li><li>SQLite</li></ul>
+          <span class="box-go"><span class="zh">七顆星</span>7 stars &rarr;</span>
+        </a>
+
+        <a class="box c-jade" href="https://github.com/kltng/calendar_converter" rel="noopener">
+          <p class="box-zh tubetext" aria-hidden="true">曆法</p>
+          <h3>CJK Calendar Converter</h3>
+          <p>Converts Chinese, Japanese, Korean and Vietnamese lunisolar dates against
+             the Gregorian calendar, pivoting on Julian Day Numbers.</p>
+          <ul class="box-spec"><li>Python</li><li>FastAPI</li><li>MCP</li></ul>
+          <span class="box-go"><span class="zh">進入</span>Enter &rarr;</span>
+        </a>
+
+        <a class="box c-amber" href="https://github.com/kltng/cataloger-mcp" rel="noopener">
+          <p class="box-zh tubetext" aria-hidden="true">編目</p>
+          <h3>Cataloger MCP</h3>
+          <p>Puts Library of Congress Subject Headings behind an MCP server, so an
+             assistant can search LCSH instead of inventing a heading.</p>
+          <ul class="box-spec"><li>Python</li><li>MCP</li><li>On PyPI</li></ul>
+          <span class="box-go"><span class="zh">進入</span>Enter &rarr;</span>
+        </a>
+
+        <a class="box c-magenta" href="https://github.com/kltng/lmstudio_ocr" rel="noopener">
+          <p class="box-zh tubetext" aria-hidden="true">識文</p>
+          <h3>LM Studio OCR</h3>
+          <p>Batch OCR through any vision-language model running locally in LM Studio,
+             with resumable progress and several output formats.</p>
+          <ul class="box-spec"><li>Python</li><li>Local VLM</li><li>Batch</li></ul>
+          <span class="box-go"><span class="zh">進入</span>Enter &rarr;</span>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- =========================== contact =========================== -->
+    <section id="contact">
+      <h2 class="sec-h">
+        <span class="sec-zh tubetext c-magenta">聯絡</span>
+        <span class="sec-en">Get in touch</span>
+        <span class="sec-rule" aria-hidden="true"></span>
+      </h2>
+
+      <div class="shopfront">
+        <div class="opensign tubebox c-jade">
+          <span class="zh tubetext">營業中</span>
+          <span class="en">Open</span>
+        </div>
+
+        <div>
+          <!-- TODO: swap the email. Add ORCID or a department page as another <li>. -->
+          <ul class="links">
+            <li><a href="mailto:you@example.edu">
+              <span class="zh" aria-hidden="true">信</span>
+              <span class="label">Email</span>
+              <span class="handle">you@example.edu</span>
+            </a></li>
+            <li><a href="https://github.com/kltng" rel="me noopener">
+              <span class="zh" aria-hidden="true">碼</span>
+              <span class="label">GitHub</span>
+              <span class="handle">@kltng</span>
+            </a></li>
+            <li><a href="https://kltng.github.io/eastd143b/" rel="noopener">
+              <span class="zh" aria-hidden="true">課</span>
+              <span class="label">Course</span>
+              <span class="handle">EASTD 143B &middot; Spring 2026</span>
+            </a></li>
+          </ul>
+
+          <p class="hours">
+            It is <time id="hktime">&mdash;&mdash;:&mdash;&mdash;</time> in Hong Kong.
+            Email is the reliable way to reach me.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <!-- TODO: your city, or your institution -->
+    <div class="streetplate">
+      <span class="en">Hong Kong</span>
+      <span class="zh">香港</span>
+    </div>
+
+    <p class="stamp">
+      <span><span class="zh">光管手工彎製</span> Hand-bent glass tube</span>
+      <span>15,000 V &middot; 30 mA &middot; Argon + mercury</span>
+      <span>&copy; 2026 KL Tang &middot; <span class="zh">版權所有</span></span>
+    </p>
+  </footer>
+
+</div>
+
+<script>
+// The shop clock actually tells Hong Kong time.
+(function () {
+  var el = document.getElementById('hktime');
+  if (el) {
+    var fmt = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Asia/Hong_Kong', hour: '2-digit', minute: '2-digit', hour12: false
+    });
+    var tick = function () { el.textContent = fmt.format(new Date()); };
+    tick();
+    setInterval(tick, 15000);
+  }
+
+  var x = document.getElementById('hoarding-x');
+  if (x) {
+    x.addEventListener('click', function () {
+      document.getElementById('hoarding').hidden = true;
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
